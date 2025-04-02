@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Square Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #333;
+            text-align: center;
+            font-size: 18px;
+        }
+        .magic-constant {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Magic Square Generator</h1>
+    <div>
+        <label for="size">Enter an odd number:</label>
+        <input type="number" id="size" min="1" step="2" placeholder="Odd number">
+        <button onclick="generateMagicSquare()">Generate</button>
+    </div>
+    <p id="error" class="error"></p>
+    <div id="magic-square"></div>
+    <script>
+        function generateMagicSquare() {
+            const sizeInput = document.getElementById('size');
+            const error = document.getElementById('error');
+            const magicSquareDiv = document.getElementById('magic-square');
+            const n = parseInt(sizeInput.value);
+
+            if (isNaN(n) || n % 2 === 0) {
+                error.textContent = "Please enter a valid odd number.";
+                magicSquareDiv.innerHTML = "";
+                return;
+            }
+
+            error.textContent = "";
+            const magicSquare = Array.from({ length: n }, () => Array(n).fill(0));
+            let num = 1;
+            let i = 0, j = Math.floor(n / 2);
+
+            while (num <= n * n) {
+                magicSquare[i][j] = num;
+                num++;
+                const newI = (i - 1 + n) % n;
+                const newJ = (j + 1) % n;
+
+                if (magicSquare[newI][newJ]) {
+                    i = (i + 1) % n;
+                } else {
+                    i = newI;
+                    j = newJ;
+                }
+            }
+
+            displayMagicSquare(magicSquare, n);
+        }
+
+        function displayMagicSquare(square, n) {
+            const magicSquareDiv = document.getElementById('magic-square');
+            magicSquareDiv.innerHTML = "";
+
+            const table = document.createElement('table');
+            square.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(num => {
+                    const td = document.createElement('td');
+                    td.textContent = num;
+                    tr.appendChild(td);
+                });
+                table.appendChild(tr);
+            });
+
+            const magicConstant = (n * (n * n + 1)) / 2;
+            const magicConstantDiv = document.createElement('div');
+            magicConstantDiv.className = "magic-constant";
+            magicConstantDiv.textContent = `Magic Constant: ${magicConstant}`;
+
+            magicSquareDiv.appendChild(table);
+            magicSquareDiv.appendChild(magicConstantDiv);
+        }
+    </script>
+</body>
+</html>
